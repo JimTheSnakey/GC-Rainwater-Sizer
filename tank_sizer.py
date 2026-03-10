@@ -45,12 +45,12 @@ roof_area = 320                 # ft²
 roof_area_in = roof_area * 144 # in^2
 
 capture_efficiency = 0.85
-daily_use_per_person = 5     # gallons/day
+daily_use_per_person = 3     # gallons/day
 people = 3
 weeks = np.linspace(1,rainfall_weekly.size, rainfall_weekly.size)
 
 weeks_targets = np.array([50])
-tanks_targets = np.array([100, 200, 500, 1000, 1500])
+tanks_targets = np.array([100, 200, 500])
 
 IN_TO_GALLONS = 0.004329
 weekly_demand = daily_use_per_person * people * 7
@@ -110,7 +110,7 @@ def bad_rain_year():
 # -----------------------------
 def find_minimum_tank(desired_weeks_reliable, step=5):
     tank_guess = 0
-    harvested_water = bad_rain_year() * roof_area_in * IN_TO_GALLONS * capture_efficiency #in gallons
+    harvested_water = rainfall_weekly * roof_area_in * IN_TO_GALLONS * capture_efficiency #in gallons
     while True:
         tank_vol_per_week, weeks_reliable = simulate_tank(tank_guess, harvested_water)
         if weeks_reliable >= desired_weeks_reliable:
@@ -123,45 +123,22 @@ def find_minimum_tank(desired_weeks_reliable, step=5):
 # RUN FOR DIFFERENT RELIABILITY TARGETS
 # -----------------------------
 
-plt.figure()
-for w in weeks_targets:
-    max_tank_vol = -1
-    max_vol_data = np.zeros(rainfall_weekly.size)
-    for i in range(1000):
-        vol_data, tank_vol = find_minimum_tank(w)
-        #print(vol_data)
-        if max_tank_vol == -1:
-            max_tank_vol = tank_vol
-            max_vol_data = vol_data.copy()
-        elif tank_vol > max_tank_vol:
-            max_tank_vol = tank_vol
-            max_vol_data = vol_data.copy()
-    print(max_vol_data)  
-    plt.plot(weeks,max_vol_data, label = f"{w} weeks (tank {max_tank_vol} gal)")
-    print(f"Weeks reliable: {w}, Minimum Tank: {max_tank_vol} gallons")
-plt.title(f"Tank Lifespan Under {roof_area} sq ft Roof & {daily_use_per_person} Gals Per Person")
-plt.xlabel("Week")
-plt.ylabel("Tank Volume (gallons)")
-plt.legend()
-plt.grid(True)
-plt.show()  
-
-# -----------------------------
-# RUN FOR DIFFERENT TANK VOLUME TARGETS
-# -----------------------------
 # plt.figure()
-# for tank_vol in tanks_targets:
-#     min_weeks_reliable = 52
-#     min_vol_data = np.zeros(rainfall_weekly.size)
-#     for i in range(500):
-#         harvested_water = bad_rain_year() * roof_area_in * IN_TO_GALLONS * capture_efficiency #in gallons
-#         vol_data, weeks_reliable = simulate_tank(tank_vol, harvested_water)
+# for w in weeks_targets:
+#     max_tank_vol = -1
+#     max_vol_data = np.zeros(rainfall_weekly.size)
+#     for i in range(1000):
+#         vol_data, tank_vol = find_minimum_tank(w)
 #         #print(vol_data)
-#         if weeks_reliable < min_weeks_reliable:
-#             min_weeks_reliable = weeks_reliable
-#             min_vol_data = vol_data
-#     plt.plot(weeks,min_vol_data, label = f"{min_weeks_reliable} weeks reliable @ {tank_vol} gal tank")
-#     print(f"Tank Size: {tank_vol} gallons. Weeks reliable: {min_weeks_reliable}")
+#         if max_tank_vol == -1:
+#             max_tank_vol = tank_vol
+#             max_vol_data = vol_data.copy()
+#         elif tank_vol > max_tank_vol:
+#             max_tank_vol = tank_vol
+#             max_vol_data = vol_data.copy()
+#     print(max_vol_data)  
+#     plt.plot(weeks,max_vol_data, label = f"{w} weeks (tank {max_tank_vol} gal)")
+#     print(f"Weeks reliable: {w}, Minimum Tank: {max_tank_vol} gallons")
 # plt.title(f"Tank Lifespan Under {roof_area} sq ft Roof & {daily_use_per_person} Gals Per Person")
 # plt.xlabel("Week")
 # plt.ylabel("Tank Volume (gallons)")
@@ -169,17 +146,25 @@ plt.show()
 # plt.grid(True)
 # plt.show()  
 
-# # -----------------------------
-# # PLOT
-# # -----------------------------
-# plt.figure(figsize=(12,6))
-# for w in weeks_targets:
-#     plt.plot(tank_data[w][:,0], '--', label=f'Before Demand ({w} wks, Tank {tank_results[w]} gal)')
-#     plt.plot(tank_data[w][:,1], '-', label=f'After Demand ({w} wks, Tank {tank_results[w]} gal)')
-
-# plt.title('Tank Levels Before and After Weekly Consumption')
-# plt.xlabel('Week')
-# plt.ylabel('Tank Level (gallons)')
-# plt.legend()
-# plt.grid(True)
-# plt.show()
+# -----------------------------
+# RUN FOR DIFFERENT TANK VOLUME TARGETS
+# -----------------------------
+plt.figure()
+for tank_vol in tanks_targets:
+    min_weeks_reliable = 50
+    min_vol_data = np.zeros(rainfall_weekly.size)
+    # for i in range(500):
+    harvested_water = rainfall_weekly * roof_area_in * IN_TO_GALLONS * capture_efficiency #in gallons
+    vol_data, weeks_reliable = simulate_tank(tank_vol, harvested_water)
+    #     #print(vol_data)
+    #     if weeks_reliable < min_weeks_reliable:
+    #         min_weeks_reliable = weeks_reliable
+    #         min_vol_data = vol_data
+    plt.plot(weeks,vol_data, label = f"{weeks_reliable} weeks reliable @ {tank_vol} gal tank")
+    print(f"Tank Size: {tank_vol} gallons. Weeks reliable: {weeks_reliable}")
+plt.title(f"Tank Lifespan Under {roof_area} sq ft Roof & {daily_use_per_person} Gals Per Person")
+plt.xlabel("Week")
+plt.ylabel("Tank Volume (gallons)")
+plt.legend()
+plt.grid(True)
+plt.show()  
