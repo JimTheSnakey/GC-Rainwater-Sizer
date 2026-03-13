@@ -8,7 +8,7 @@ import random
 #if Min tank is 1: rainfall replenishes water needs every week
 
 
-# data = pd.read_csv(r"C:\Users\danie\Desktop\Classes\Grand Challenges\Rainwater Sizer\McDowell Rain and Temp Stats.csv")
+data = pd.read_csv("Beckley Rainwater Daily data.csv")
 
 # rainfall_monthly = pd.to_numeric(data["Precipitation (inches)"].to_numpy())
 
@@ -18,22 +18,6 @@ import random
 #     rainfall_weekly[i] = rainfall_monthly[i//4]/4
 
 
-# -----------------------------
-# INPUT PARAMETERS
-# -----------------------------
-rainfall_weekly = np.array([
-    0.92, 0.83, 0.89, 0.82, 0.90, 0.91, 0.88, 0.93,
-    0.75, 0.86, 0.87, 0.87, 0.91, 0.89, 0.95, 0.97,
-    1.00, 0.99, 1.05, 1.06, 1.01, 1.07, 1.10, 1.08,
-    1.15, 1.14, 1.10, 1.06, 1.09, 1.05, 1.01, 0.97,
-    0.81, 0.75, 0.66, 0.70, 0.76, 0.81, 0.79, 0.69,
-    0.61, 0.57, 0.59, 0.64, 0.65, 0.64, 0.71, 0.83,
-    0.90, 0.88, 0.77, 0.77
-])
-
-
-
-        
 
 
 #print(np.sum(rainfall_weekly))  # total inches over the period
